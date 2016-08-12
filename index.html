@@ -1,0 +1,113 @@
+<!-- C:\APP\LEAD\chatapp2 -->
+<!doctype html>
+<html>
+
+<head>
+    <title>Socket.IO chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font: 13px Helvetica, Arial;
+        }
+        
+        .chatForm {
+            background: #000;
+            padding: 3px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        .chatForm input {
+            border: 0;
+            padding: 10px;
+            width: 90%;
+            margin-right: .5%;
+        }
+        
+        .chatForm button {
+            width: 9%;
+            background: rgb(130, 224, 255);
+            border: none;
+            padding: 10 px;
+        }
+        
+        #messages {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #messages li {
+            padding: 5px 10px;
+        }
+        
+        #messages li: nth-child(odd) {
+            background: #eee;
+        }
+        
+        body,
+        html {
+            min-height: 100%;
+        }
+        
+        body {
+            background-image: url(http://picalls.com/wp-content/uploads/2016/05/Snowy-mountains.jpg);
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous">
+    </script>
+</head>
+
+<body>
+    <div id="usernameDiv">
+        <br>
+        <form id="setUsername"> &nbsp;&nbsp;&nbsp;<strong>Your Username:&nbsp;&nbsp;</strong>
+            <input size="35" id="u">
+            <input type="submit"> </form>
+        <br>
+        <hr> </div>
+    <div id="chatDiv">
+        <ul id="messages"></ul>
+        <form id="sendMessage" class="chatForm" action="">
+            <input id="m" autocomplete="off" />
+            <button>Send</button>
+        </form>
+        <div id="users"></div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+        $('#setUsername').submit(function () {
+            socket.emit('add user', $('#u').val());
+            $('#u').val('');
+            return false;
+        });
+        $('#sendMessage').submit(function () {
+            socket.emit('add message', $('#m').val());
+            $('#m').val('');
+            return false;
+        });
+        socket.on('old messages', function (docsCallback) {
+            for(var i = 0; i < docsCallback.length; i++) {
+                showMsg(docsCallback[i]);
+            }
+        });
+
+        function showMsg(data) {
+            $('#messages').append("<br>" + "<li>" + "<strong>" + data.user + "</strong>" + ": &nbsp;" + data.message);
+        };
+        socket.on('new message', function (data) {
+            showMsg(data);
+        });
+    </script>
+</body>
+
+</html>
